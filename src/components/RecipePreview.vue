@@ -1,33 +1,49 @@
 <template>
   <router-link
     :to="{ name: 'recipe', params: { recipeId: recipe.id } }"
-    class="recipe-preview"
+    class="recipe-preview"  :class="{ 'clicked-recipe-link': clicked }"
+    @click.native="markAsClicked"
   >
-    <div class="recipe-body">
-      <img v-if="image_load" :src="recipe.image" class="recipe-image" />
-    </div>
-    <div class="recipe-footer">
-      <div :title="recipe.title" class="recipe-title">
-        {{ recipe.title }}
-      </div>
-      <ul class="recipe-overview">
-        <li>{{ recipe.readyInMinutes }} minutes</li>
-        <li>{{ recipe.aggregateLikes }} likes</li>
-      </ul>
-    </div>
+  <div>
+    <b-card
+      :key="recipe.id"
+      :title="recipe.title"
+      :img-src="recipe.image"
+      :img-alt="recipe.title"
+      img-top
+      tag="article"
+      style="max-width: 20rem;"
+      class="mb-2"
+    >
+      <b-card-text>
+        Ready in {{ recipe.readyInMinutes }} minutes
+        <br>
+        Popularity: {{ recipe.aggregateLikes }} likes
+        <br>
+        Vegan: {{ recipe.vegan ? 'Yes' : 'No' }}
+        <br>
+        Vegetarian: {{ recipe.vegetarian ? 'Yes' : 'No' }}
+        <br>
+        Gluten-free: {{ recipe.glutenFree ? 'Yes' : 'No' }}
+        <br>
+      </b-card-text>
+      <b-button href="#" variant="primary">View Recipe</b-button>
+    </b-card>
+  </div>
   </router-link>
 </template>
 
 <script>
 export default {
-  mounted() {
-    this.axios.get(this.recipe.image).then((i) => {
-      this.image_load = true;
-    });
-  },
+  // mounted() {
+  //   this.axios.get(this.recipe.image).then((i) => {
+  //     this.image_load = true;
+  //   });
+  // },
   data() {
     return {
-      image_load: false
+      clicked:false
+      // image_load: false
     };
   },
   props: {
@@ -59,6 +75,11 @@ export default {
     //     return undefined;
     //   }
     // }
+  },
+  methods: {
+    markAsClicked() {
+      this.clicked = true;
+    }
   }
 };
 </script>
@@ -137,5 +158,8 @@ export default {
   width: 90px;
   display: table-cell;
   text-align: center;
+}
+.clicked-recipe-link {
+  color: purple;
 }
 </style>
