@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <div id="nav">
+    <NavigationBar/>
+    <!-- <div id="nav">
       <router-link :to="{ name: 'main' }">Vue Recipes</router-link>|
       <router-link :to="{ name: 'search' }">Search</router-link>|
       {{ !$root.store.username }}
@@ -12,14 +13,18 @@
       <span v-else>
         {{ $root.store.username }}: <button @click="Logout">Logout</button>|
       </span>
-    </div>
+    </div> -->
     <router-view />
   </div>
 </template>
 
 <script>
+import NavigationBar from './components/NavigationBar.vue';
 export default {
   name: "App",
+  components: {
+    NavigationBar
+  },
   methods: {
     Logout() {
       this.$root.store.logout();
