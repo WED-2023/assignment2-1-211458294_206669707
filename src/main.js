@@ -11,7 +11,7 @@ Vue.use(VueRouter);
 const router = new VueRouter({
   routes,
 });
-
+export const EventBus = new Vue();
 import Vuelidate from "vuelidate";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
@@ -68,18 +68,19 @@ Vue.use(VueAxios, axios);
 
 Vue.config.productionTip = false;
 
-const shared_data = {
+export const shared_data = {
   server_domain: "http://localhost:3000",
-  username: localStorage.username,
+  username: localStorage.getItem("username"), // Updated to use getItem method
   login(username) {
     localStorage.setItem("username", username);
     this.username = username;
-    console.log("login", this.username);
+    EventBus.$emit('user-logged-in', username);
   },
   logout() {
     console.log("logout");
     localStorage.removeItem("username");
-    this.username = undefined;
+    this.username = undefined;;
+    EventBus.$emit('user-logged-out');
   },
 };
 console.log(shared_data);
