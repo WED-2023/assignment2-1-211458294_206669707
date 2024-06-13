@@ -29,6 +29,7 @@ import {
   ModalPlugin,
   BootstrapVueIcons,
   IconsPlugin,
+  FormFilePlugin
 } from "bootstrap-vue";
 [
   FormGroupPlugin,
@@ -44,6 +45,7 @@ import {
   ModalPlugin,
   BootstrapVueIcons,
   IconsPlugin,
+  FormFilePlugin
 ].forEach((x) => Vue.use(x));
 Vue.use(Vuelidate);
 
