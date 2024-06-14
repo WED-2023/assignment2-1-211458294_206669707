@@ -63,13 +63,14 @@
     this.isUserSignedIn = !!this.username;
   },
   signOut() {
-    console.log("Sign-out button clicked");
-    shared_data.logout(); // Clear username from local storage
-    console.log("here!")
-    this.username = null; // Update component's username state
-    this.isUserSignedIn = false; // Update component's signed-in state
-    this.$router.push('/'); // Redirect to home page or any desired route
-  },
+      console.log("Sign-out button clicked");
+      shared_data.logout(); // Clear username from local storage
+      console.log("here!");
+      this.username = null; // Update component's username state
+      this.isUserSignedIn = false; // Update component's signed-in state
+      localStorage.removeItem('lastSearchQuery'); // Clear last search query
+      this.$router.push('/'); // Redirect to home page or any desired route
+    }
   }
   };
   </script>
