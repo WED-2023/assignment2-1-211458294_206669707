@@ -87,7 +87,8 @@ export const shared_data = {
   logout() {
     console.log("logout");
     localStorage.removeItem("username");
-    this.username = undefined;;
+    localStorage.removeItem("lastSearchQuery"); // Clear the last search query on logout
+    this.username = null;
     EventBus.$emit('user-logged-out');
   },
 };
