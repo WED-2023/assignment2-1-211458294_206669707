@@ -4,11 +4,12 @@
       <IngredientItem 
         :ingredient="ingredient" 
         :index="index" 
-        @remove="removeIngredient" 
-        @updateImage="updateIngredientImage"
+        @remove="removeIngredient"
+        @save="saveIngredient"
       />
     </div>
     <b-button @click="addIngredient">Add Ingredient</b-button>
+    <div v-if="formError" class="text-danger mt-2">{{ formError }}</div>
   </div>
 </template>
 
@@ -27,23 +28,63 @@ export default {
   },
   data() {
     return {
-      ingredients: this.value
+      ingredients: this.value,
+      formError: '',
+      newIngredientAdded: false
     };
   },
   methods: {
     addIngredient() {
-      this.ingredients.push({ name: '', amount: '', unit: '', consistency: '', image: '' });
+      this.formError = ''; // Reset the error message
+      if (this.validateIngredients(false)) { // Validate all ingredients before adding a new one
+        this.ingredients.push({ name: '', amount: '', unit: null, consistency: '', image: '' });
+        this.newIngredientAdded = true;
+      }
     },
     removeIngredient(index) {
-      this.ingredients.splice(index, 1);
+      if (this.ingredients.length <= 1) {
+        this.formError = 'You must add at least one ingredient.';
+      } else {
+        this.ingredients.splice(index, 1);
+        this.validateIngredients(false);
+      }
     },
-    updateIngredientImage({ index, image }) {
-      this.$set(this.ingredients[index], 'image', image);
+    saveIngredient({ index, ingredient }) {
+      this.ingredients.splice(index, 1, ingredient);
+      this.validateIngredients(false);
+    },
+    validateIngredients(skipLast = false) {
+      this.formError = '';
+      const len = skipLast ? this.ingredients.length - 1 : this.ingredients.length;
+      if (len < 1) {
+        this.formError = 'You must add at least one ingredient.';
+        return false;
+      }
+      for (let i = 0; i < len; i++) {
+        if (!this.ingredients[i].name || this.ingredients[i].name.length < 2) {
+          this.formError = `Ingredient ${i + 1} has an invalid name.`;
+          return false;
+        }
+        if (!this.ingredients[i].amount || isNaN(this.ingredients[i].amount)) {
+          this.formError = `Ingredient ${i + 1} has an invalid amount.`;
+          return false;
+        }
+        if (!this.ingredients[i].unit) {
+          this.formError = `Ingredient ${i + 1} has an invalid unit.`;
+          return false;
+        }
+      }
+      return true;
     }
   },
   watch: {
     ingredients: {
       handler(newIngredients) {
+        if (this.newIngredientAdded) {
+          this.newIngredientAdded = false;
+        } else {
+          this.validateIngredients(false);
+        }
         this.$emit('input', newIngredients);
       },
       deep: true
@@ -57,3 +98,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.text-danger {
+  color: red;
+}
+</style>
