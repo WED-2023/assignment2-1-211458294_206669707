@@ -1,24 +1,42 @@
 <template>
   <div>
-    <b-button v-b-modal.modal-prevent-closing>Add recipe</b-button>
     <b-modal
+        id="modal-prevent-closing"
+        ref="modal"
+        title="New Recipe"
+        :visible="visible"
+        @ok="handleOk"
+      >
+        
+        <NewRecipeForm ref="form"></NewRecipeForm>
+      </b-modal>
+    <!-- <b-button v-b-modal.modal-prevent-closing>Add Recipe</b-button> -->
+    <!-- <b-modal
       id="modal-prevent-closing"
       ref="modal"
       title="New Recipe"
-      @show="resetModal"
-      @hidden="resetModal"
       @ok="handleOk"
+      @hidden="resetModal"
+      @show="resetModal"
       size="lg"
     >
-      <NewRecipeForm ref="form"></NewRecipeForm>
-    </b-modal>
+      <NewRecipeForm ref="form" @form-error="handleFormError" @form-success="handleFormSuccess"></NewRecipeForm>
+      <router-link ref="routerLink" :to="{ path: '/' }" class="d-none"></router-link>
+    </b-modal> -->
   </div>
 </template>
 
 <script>
 import NewRecipeForm from './NewRecipeForm.vue';
+import { mockAddUserRecipe } from '../services/user.js';
 
 export default {
+  props: {
+    visible: {
+      type: Boolean,
+      required: true
+    }
+  },
   components: {
     NewRecipeForm
   },
@@ -27,21 +45,25 @@ export default {
       this.$refs.form.resetForm();
     },
     handleOk(bvModalEvent) {
-      // Prevent modal from closing
       bvModalEvent.preventDefault();
-      // Trigger form validation
-      this.$refs.form.$v.$touch();
-      if (this.$refs.form.isFormValid()) {
-        alert('New Recipe was added. Bon Appetit!');
-        // Form is valid, submit the form
-        this.$refs.form.submitForm();
-        // Hide the modal manually
-        this.$nextTick(() => {
+      this.$refs.form.submitForm();
+    },
+    handleFormError(errorMessage) {
+      alert('Form is not valid: ' + errorMessage);
+    },
+    async handleFormSuccess(recipeDetails) {
+      // this.$refs.modal.hide();
+      try {
+        const response = mockAddUserRecipe(recipeDetails);
+        if (response.status === 200 && response.response.data.success) {
+          alert(response.response.data.message);
           this.$bvModal.hide('modal-prevent-closing');
-        });
-      } else {
-        // Display error message or handle invalid form
-        alert('Form is not valid. Please check the fields and try again.');
+          this.$router.push('/');
+        } else {
+          alert('Failed to add the recipe. Please try again.');
+        }
+      } catch (error) {
+        alert('An error occurred: ' + error.message);
       }
     }
   }
