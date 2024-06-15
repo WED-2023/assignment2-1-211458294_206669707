@@ -45,7 +45,7 @@
           <b-form-invalid-feedback v-if="fileError">{{ fileError }}</b-form-invalid-feedback>
         </b-col>
         <b-col>
-          <b-button variant="success" @click="saveIngredient">Add</b-button>
+          <b-button variant="success" @click="saveIngredient">Save</b-button>
         </b-col>
         <b-col>
           <b-button variant="danger" @click="removeIngredient">Remove</b-button>
