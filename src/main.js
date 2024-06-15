@@ -2,6 +2,8 @@ import Vue from "vue";
 import App from "./App.vue";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import 'bootstrap-vue/dist/bootstrap-vue-icons.min.css';
+
 import VueAxios from "vue-axios";
 import axios from "axios";
 
@@ -29,7 +31,9 @@ import {
   ModalPlugin,
   BootstrapVueIcons,
   IconsPlugin,
-  FormFilePlugin
+  FormFilePlugin, 
+  FormTextareaPlugin,
+  PopoverPlugin,
 } from "bootstrap-vue";
 [
   FormGroupPlugin,
@@ -45,7 +49,9 @@ import {
   ModalPlugin,
   BootstrapVueIcons,
   IconsPlugin,
-  FormFilePlugin
+  FormFilePlugin,
+  FormTextareaPlugin,
+  PopoverPlugin,
 ].forEach((x) => Vue.use(x));
 Vue.use(Vuelidate);
 
