@@ -1,4 +1,5 @@
 <template>
+  <div>
     <ul class="nav nav-tabs">
       <li class="nav-item">
         <router-link to="/" class="nav-link" active-class="active">Home Page</router-link>
@@ -10,7 +11,7 @@
         <router-link to="/about" class="nav-link" active-class="active">About</router-link>
       </li>
     <li class="nav-item" v-if="isUserSignedIn">
-      <router-link to="/add-recipe" class="nav-link" active-class="active">Add New Recipe</router-link>
+      <router-link to="#" class="nav-link" @click.native="showNewRecipeModal">Add New Recipe</router-link>
       </li>
     <li class="nav-item dropdown ml-auto" v-if="!isUserSignedIn">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Hello Guest</a>
@@ -37,17 +38,24 @@
         </div>
       </li>
     </ul>
+      <NewRecipeModal :visible="newRecipeModalVisible" @close="newRecipeModalVisible = false"></NewRecipeModal>
+  </div>
   </template>
   
   <script>
   import { EventBus, shared_data } from '@/main.js';
+  import NewRecipeModal from './NewRecipeModal.vue';
   export default {
     name: 'NavigationBar',
     data() {
     return {
     username: null,
-    isUserSignedIn: false
+    isUserSignedIn: false,
+    newRecipeModalVisible: false // Track modal visibility
   };
+  },
+  components: {
+    NewRecipeModal
   },
   created() {
     EventBus.$on('user-logged-in', this.updateUser);
@@ -62,6 +70,13 @@
     this.username = localStorage.getItem('username');
     this.isUserSignedIn = !!this.username;
   },
+    showNewRecipeModal() {
+      this.newRecipeModalVisible = true;
+    },
+    hideNewRecipeModal() {
+      // Set modal visibility to false
+      this.newRecipeModalVisible = false;
+    },
   signOut() {
       console.log("Sign-out button clicked");
       shared_data.logout(); // Clear username from local storage
@@ -70,6 +85,10 @@
       this.isUserSignedIn = false; // Update component's signed-in state
       localStorage.removeItem('lastSearchQuery'); // Clear last search query
       this.$router.push('/'); // Redirect to home page or any desired route
+    },
+    emitShowModal() {
+      console.log("hereee")
+      EventBus.$emit('show-add-recipe-modal');
     }
   }
   };

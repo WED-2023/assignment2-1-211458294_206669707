@@ -1,5 +1,6 @@
 import Vue from "vue";
 import App from "./App.vue";
+import { BootstrapVue} from 'bootstrap-vue';//I ADDED NOW
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap-vue/dist/bootstrap-vue-icons.min.css';
@@ -10,6 +11,7 @@ import axios from "axios";
 import routes from "./routes";
 import VueRouter from "vue-router";
 Vue.use(VueRouter);
+Vue.use(BootstrapVue);//I ADDED NOW
 const router = new VueRouter({
   routes,
 });
