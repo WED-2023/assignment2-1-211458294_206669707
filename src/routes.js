@@ -1,5 +1,9 @@
 import Main from "./pages/MainPage";
 import NotFound from "./pages/NotFoundPage";
+import FavoritesPage from "./pages/FavoritesPage"
+import MyRecipes from "./pages/MyRecipesPage"
+import AboutPage from "./pages/AboutPage.vue";
+// import { component } from "vue/types/umd.js";
 
 const routes = [
   {
@@ -32,6 +36,22 @@ const routes = [
     name: "notFound",
     component: NotFound,
   },
+  {
+    path: "/favorites",
+    name: "favorites",
+    component: FavoritesPage,
+  },
+  {
+    path: "/myrecipes",
+    name: "myrecipes",
+    component: MyRecipes,
+  },
+  {
+    path: "/about",
+    name: "about",
+    component: AboutPage,
+  },
+
 ];
 
 export default routes;
