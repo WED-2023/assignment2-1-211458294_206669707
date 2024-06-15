@@ -37,6 +37,8 @@
 </template>
 
 <script>
+import { mockAddFavorite } from '../services/user.js';
+
 export default {
   data() {
     return {
@@ -59,9 +61,11 @@ export default {
       this.clicked = localStorage.getItem(`recipe_${this.recipe.id}_clicked`) === 'true';
     },
     toggleFavorite() {
-      this.isFavorite = !this.isFavorite;
+      // this.isFavorite = !this.isFavorite;
       this.isFavorite = true;
       localStorage.setItem(`recipe_${this.recipe.id}_favorite`, this.isFavorite);
+      const response = mockAddFavorite(recipeDetails);
+      // TODO: add like to the like count of this recipe
     },
     checkFavorite() {
       this.isFavorite = localStorage.getItem(`recipe_${this.recipe.id}_favorite`) === 'true';
