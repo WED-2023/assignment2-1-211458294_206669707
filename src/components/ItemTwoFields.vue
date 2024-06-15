@@ -3,13 +3,9 @@
       <b-form-row>
         <b-col>
           <b-form-input 
-            v-model="$v.item.firstField.$model" 
+            v-model="item.firstField" 
             placeholder="Step title" 
-            :class="{'is-invalid': $v.item.firstField.$error}"
           ></b-form-input>
-          <b-form-invalid-feedback v-if="$v.item.firstField.$error">
-            Step title is required
-          </b-form-invalid-feedback>
         </b-col>
         <b-col>
           <b-form-input v-model="item.secondField" placeholder="Description"></b-form-input>
@@ -26,13 +22,17 @@
   
   <script>
   import { required } from "vuelidate/lib/validators";
-  import Vuelidate from "vuelidate";
+//   import Vuelidate from "vuelidate";
   
   export default {
     props: {
       item: {
         type: Object,
-        required: true
+            required: true,
+        default: () => ({
+        firstField: '',
+        secondField: ''
+      })
       },
       index: {
         type: Number,

@@ -101,8 +101,8 @@
         <div v-if="$v.ingredients.$each.unit.$error">Ingredient unit is required.</div>
       </b-form-invalid-feedback>
     </b-form-group>
-
-    <b-form-group label="Preparation Steps">
+    <add-items v-model="preparationSteps"  @update-steps="updatePreparationSteps"></add-items>
+    <!-- <b-form-group label="Preparation Steps">
       <AddItems 
         v-model="$v.preparationSteps.$model"
         itemFirstPlaceholder="Step" 
@@ -115,7 +115,7 @@
       <b-form-invalid-feedback v-if="$v.preparationSteps.$each.$error && $v.preparationSteps.$each.$touched">
         <div v-if="$v.preparationSteps.$each.step.$error">Preparation step is required.</div>
       </b-form-invalid-feedback>
-    </b-form-group>
+    </b-form-group> -->
   </div>
 </template>
 
@@ -144,7 +144,8 @@ export default {
       numberOfDishes: '',
       prepTime: '',
       ingredients: [{ name: '', amount: '', unit: '', consistency: '', image: '' }],
-      preparationSteps: [{ step: '', description: '' }]
+      // preparationSteps: [{ step: '', description: '' }]
+      preparationSteps: [{ description: '' }]
     };
   },
   validations: {
@@ -164,17 +165,20 @@ export default {
     },
     preparationSteps: {
       $each: {
-        step: { required }
+        description: { required }
       }
     }
   },
   methods: {
+    updatePreparationSteps(steps) {
+      this.preparationSteps = steps;
+    },
     resetForm() {
       this.$v.$reset();
       this.name = '';
       this.summary = '';
       this.vegetarian = null;
-      this.vegan =
+      this.vegan = null
       this.glutenFree = null;
       this.recipeImage = null;
       this.numberOfDishes = '';
@@ -185,15 +189,30 @@ export default {
     isFormValid() {
       this.$v.$touch();
       return !this.$v.$invalid;
+      // return !this.$v.$error;
     },
     submitForm() {
-      if (this.isFormValid()) {
-        // Submit the form data
-        alert('Form submitted successfully!');
-      } else {
-        this.formError = 'Please fix the errors in the form.';
-      }
-    }
+  this.$v.$touch();
+  if (this.$v.$invalid) {
+    let errorMessage = [];
+    if (this.$v.name.$invalid) errorMessage.push('Name is invalid.');
+    if (this.$v.summary.$invalid) errorMessage.push('Summary is invalid.');
+    if (this.$v.vegetarian.$invalid) errorMessage.push('Vegetarian field is required.');
+    if (this.$v.vegan.$invalid) errorMessage.push('Vegan field is required.');
+    if (this.$v.glutenFree.$invalid) errorMessage.push('Gluten Free field is required.');
+    if (this.$v.ingredients.$each.$anyError) errorMessage.push('One or more ingredients are incomplete.');
+    if (this.$v.preparationSteps.$each.$anyError) errorMessage.push('One or more preparation steps are incomplete.');
+
+    this.$emit('form-error', errorMessage.join(' '));
+    this.formError = 'Please fix the errors in the form: ' + errorMessage.join(' ');
+  } else {
+    this.$emit('form-success');
+    // alert('Form submitted successfully!');
+    // Additional success actions here
+  }
+}
+
+
   }
 };
 </script>

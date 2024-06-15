@@ -1,98 +1,73 @@
 <template>
   <div>
-    <div v-for="(item, index) in items" :key="index">
-      <ItemTwoFields 
-        :item="item" 
-        :index="index" 
-        @remove="removeItem"
-        @save="saveItem"
-      />
+    <div v-for="(step, index) in steps" :key="index">
+      <b-form-group :label="'Step ' + (index + 1)">
+        <b-form-textarea
+          class="flex-grow-1 mr-2"
+          v-model="step.description"
+          @blur="handleBlur(index)"
+          placeholder="Describe the step"
+          rows="3"
+          :state="step.touched ? (step.description !== '' ? true : false) : null"
+        ></b-form-textarea>
+        <b-form-invalid-feedback v-if="step.touched && !step.description">
+          This field is required.
+        </b-form-invalid-feedback>
+      </b-form-group>
+      <b-button
+        variant="danger"
+        @click="removeStep(index)"
+        v-show="steps.length > 1"
+        class="mb-2">-</b-button>
     </div>
-    <b-button @click="addItem">Add Item</b-button>
+    <b-button @click="addStep" :disabled="!allStepsFilled" variant="success">Add Step</b-button>
     <div v-if="formError" class="text-danger mt-2">{{ formError }}</div>
   </div>
 </template>
 
 <script>
-import ItemTwoFields from './ItemTwoFields.vue';
-
 export default {
-  components: {
-    ItemTwoFields
-  },
-  props: {
-    value: {
-      type: Array,
-      default: () => []
-    }
-  },
   data() {
     return {
-      items: this.value,
-      formError: '',
-      newItemAdded: false
+      steps: [{ description: '', touched: false }],
+      formError: ''
     };
   },
-  methods: {
-    addItem() {
-      this.formError = ''; // Reset the error message
-      if (this.validateItems(false)) { // Validate all items before adding a new one
-        this.items.push({ firstField: '', secondField: '' });
-        this.newItemAdded = true;
-      }
-    },
-    removeItem(index) {
-      if (this.items.length <= 1) {
-        this.formError = 'You must add at least one item.';
-      } else {
-        this.items.splice(index, 1);
-        this.validateItems(false);
-      }
-    },
-    saveItem({ index, item }) {
-      this.items.splice(index, 1, item);
-      this.validateItems(false);
-    },
-    validateItems(skipLast = false) {
-      this.formError = '';
-      const len = skipLast ? this.items.length - 1 : this.items.length;
-      if (len < 1) {
-        this.formError = 'You must add at least one preperation step.';
-        return false;
-      }
-      for (let i = 0; i < len; i++) {
-        if (!this.items[i].firstField) {
-          this.formError = `Item ${i + 1} has an invalid step title.`;
-          return false;
-        }
-      }
-      return true;
+  computed: {
+    allStepsFilled() {
+      return this.steps.every(step => step.description.trim() !== '');
     }
   },
-  watch: {
-    items: {
-      handler(newItems) {
-        if (this.newItemAdded) {
-          this.newItemAdded = false;
-        } else {
-          this.validateItems(false);
-        }
-        this.$emit('input', newItems);
-      },
-      deep: true
+  methods: {
+    addStep() {
+      if (this.allStepsFilled) {
+        this.steps.push({ description: '' });
+        this.emitSteps();
+      } else {
+        this.formError = 'Please complete all previous steps before adding a new one.';
+      }
     },
-    value: {
-      handler(newValue) {
-        this.items = newValue;
-      },
-      deep: true
+    removeStep(index) {
+      if (this.steps.length > 1) {
+        this.steps.splice(index, 1);
+        this.emitSteps();
+      } else {
+        this.formError = 'At least one step is required.';
+      }
+    },
+    handleBlur(index) {
+      this.steps[index].touched = true;
+      this.emitSteps();
+    },
+    emitSteps() {
+      this.$emit('update-steps', this.steps);
     }
   }
 }
 </script>
 
 <style scoped>
-.text-danger {
+/* .text-danger {
   color: red;
-}
+} */
 </style>
