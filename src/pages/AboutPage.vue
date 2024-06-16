@@ -13,6 +13,14 @@
             <interactive-timeline :events="events"></interactive-timeline>
           </b-col>
         </b-row>
+        <b-row>
+    <b-col cols="12" class="text-center">
+        <h1>Welcome to Matkonim—What's This Project About?</h1>
+        <p class="lead">Matkonim is a vibrant platform for sharing recipes and exploring new culinary worlds.</p>
+        <p class="lead">You are more than welcome to draw inspiration from these recipes and share your own culinary creations with our community!</p>
+    </b-col>
+</b-row>
+
       </b-container>
     </div>
   </template>

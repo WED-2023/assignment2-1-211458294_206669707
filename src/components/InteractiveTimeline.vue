@@ -19,7 +19,8 @@
                   <b-card-body>
                     <b-card-title>{{ event.title }}</b-card-title>
                     <b-card-text>{{ event.content }}</b-card-text>
-                    <b-button size="sm" @click="hide">Close</b-button>
+                    <!-- <b-button size="sm" @click="hide">Close</b-button> -->
+                    <b-button size="sm" @click="() => { console.log('Closing popover'); hide(); }">Close</b-button>
                   </b-card-body>
                 </b-card>
               </template>
