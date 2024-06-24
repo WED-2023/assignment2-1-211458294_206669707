@@ -84,22 +84,26 @@ Vue.use(VueAxios, axios);
 
 Vue.config.productionTip = false;
 
-export const shared_data = {
+export const shared_data = Vue.observable({
   server_domain: "http://localhost:3000",
-  username: localStorage.getItem("username"), // Updated to use getItem method
+  username: null, // Updated to use getItem method
   login(username) {
+    shared_data.username = username;
     localStorage.setItem("username", username);
-    this.username = username;
     EventBus.$emit('user-logged-in', username);
+    // localStorage.setItem("username", username);
+    // this.username = username;
+    // EventBus.$emit('user-logged-in', username);
   },
   logout() {
-    console.log("logout");
+    shared_data.username = null;
+    EventBus.$emit('user-logged-out');
+    // console.log("logout");
     localStorage.removeItem("username");
     localStorage.removeItem("lastSearchQuery"); // Clear the last search query on logout
-    this.username = null;
-    EventBus.$emit('user-logged-out');
+    localStorage.removeItem("searchState");
   },
-};
+});
 console.log(shared_data);
 // Vue.prototype.$root.store = shared_data;
 

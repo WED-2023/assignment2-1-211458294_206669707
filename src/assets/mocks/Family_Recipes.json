@@ -66,14 +66,14 @@
         "Step 10: Let the cake cool in the pan for 10 minutes, then turn out onto a wire rack to cool completely.",
         "Step 11: Optionally, frost with your favorite icing or dust with powdered sugar before serving."
       ],
-      "image": "./bannana_cake.jpg"
+      "image": "https://sallysbakingaddiction.com/wp-content/uploads/2016/08/the-best-banana-cake-3.jpg"
     },
   
     "recipe2": {
       "name": "Orange Soup",
       "owner": {
         "name": "Anat",
-        "relation": "Adi's Auntunt"
+        "relation": "Adi's Aunt"
       },
       "occasion": "Holidays and Cold Winters",
       "ingredients": [
@@ -126,7 +126,7 @@
         "Step 5: Use an immersion blender to puree the soup until smooth.",
         "Step 6: Season with salt and pepper to taste. Serve hot."
       ],
-      "image": "./orange_soup.jpg"
+      "image": "https://images.immediate.co.uk/production/volatile/sites/2/2020/04/OLI-0420-Everyday_CarrotOrangeSoup_04184_preview-556d161.jpg?quality=90&crop=3px,824px,1194px,514px&resize=556,505"
     },
   
     "recipe3": {
@@ -188,7 +188,7 @@
         "Step 7: Stir in the grated Parmesan cheese until melted and well combined.",
         "Step 8: Season with salt and black pepper to taste. Serve immediately."
       ],
-      "image": "./Pasta.jpg"
+      "image": "https://static.toiimg.com/thumb/54292840.cms?width=1200&height=900"
     }
   }
   

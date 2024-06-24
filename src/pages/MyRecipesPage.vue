@@ -1,7 +1,6 @@
 <template>
     <div>
-      <h1>My Recipes</h1>
-      <RecipePreviewList :recipes="myrecipes" />
+      <RecipePreviewList title= "My Recipes" :recipes="myrecipes" />
     </div>
   </template>
   

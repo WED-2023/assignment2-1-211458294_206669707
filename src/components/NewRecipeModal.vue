@@ -7,7 +7,7 @@
         title="New Recipe"
         :visible.sync="visible"
         @ok="handleOk"
-        @hidden="resetModal"
+        @hidden="handleHidden"
       >
     <!-- <NewRecipeForm ref="form"></NewRecipeForm> -->
     <NewRecipeForm ref="form" @form-error="handleFormError" @form-success="handleFormSuccess"></NewRecipeForm>

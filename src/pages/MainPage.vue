@@ -1,11 +1,13 @@
 <template>
   <div class="container">
-    <h1 class="title">Main Page</h1>
-    <RecipePreviewList title="Randome Recipes" class="RandomRecipes center" />
-    <router-link v-if="!$root.store.username" to="/login" tag="button">You need to Login to vue this</router-link>
-    {{ !$root.store.username }}
+    <RecipePreviewList ref="recipePreviewList" title="🍳 Explore These Recipes" class="RandomRecipes center" amountToFetch="3" />
+    <b-button variant="primary" class="mt-3" @click="fetchOtherRecipes">
+      Show Me More Recipes
+    </b-button>
+    <router-link v-if="!$root.store.username" to="/login" tag="button">Login to View More</router-link>
     <RecipePreviewList
-      title="Last Viewed Recipes"
+      title="Recently Viewed Recipes"
+      :amountToFetch="3"
       :class="{
         RandomRecipes: true,
         blur: !$root.store.username,
@@ -13,11 +15,6 @@
       }"
       disabled
     ></RecipePreviewList>
-    <!-- <div
-      style="position: absolute;top: 70%;left: 50%;transform: translate(-50%, -50%);"
-    >
-      Centeredasdasdad
-    </div>-->
   </div>
 </template>
 
@@ -26,20 +23,58 @@ import RecipePreviewList from "../components/RecipePreviewList";
 export default {
   components: {
     RecipePreviewList
+  },
+  methods: {
+    fetchOtherRecipes() {
+      this.$refs.recipePreviewList.getRandomRecipes();
+    }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
 .RandomRecipes {
-  margin: 10px 0 10px;
+  margin: 20px 0;
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .blur {
-  -webkit-filter: blur(5px); /* Safari 6.0 - 9.0 */
   filter: blur(2px);
+  opacity: 0.7;
+  transition: opacity 0.3s ease-in-out;
 }
-::v-deep .blur .recipe-preview {
+
+.blur .recipe-preview {
   pointer-events: none;
   cursor: default;
+}
+
+.b-button {
+  font-weight: bold;
+  text-transform: uppercase;
+  background-color: #3490dc;
+  border-color: #3490dc;
+  &:hover {
+    background-color: #2779bd;
+    border-color: #2779bd;
+  }
+}
+
+.router-link-button {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  &:hover {
+    background-color: #5a6268;
+    border-color: #5a6268;
+  }
 }
 </style>

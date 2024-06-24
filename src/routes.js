@@ -3,7 +3,8 @@ import NotFound from "./pages/NotFoundPage";
 import FavoritesPage from "./pages/FavoritesPage"
 import MyRecipes from "./pages/MyRecipesPage"
 import AboutPage from "./pages/AboutPage.vue";
-// import { component } from "vue/types/umd.js";
+import FamilyRecipePage from "./pages/FamilyReciepsPage.vue";
+import RecipeViewPage from "./pages/RecipeViewPage.vue";
 
 const routes = [
   {
@@ -26,23 +27,23 @@ const routes = [
     name: "search",
     component: () => import("./pages/SearchPage"),
   },
-  {
-    path: "   ",
-    name: "recipe",
-    component: () => import("./pages/RecipeViewPage"),
-  },
+  // {
+  //   path: " ",
+  //   name: "recipe",
+  //   component: () => import("./pages/RecipeViewPage"),
+  // },
   {
     path: "*",
     name: "notFound",
     component: NotFound,
   },
   {
-    path: "/favorites",
+    path: "/favorite-recipes",
     name: "favorites",
     component: FavoritesPage,
   },
   {
-    path: "/myrecipes",
+    path: "/my-recipes",
     name: "myrecipes",
     component: MyRecipes,
   },
@@ -51,7 +52,16 @@ const routes = [
     name: "about",
     component: AboutPage,
   },
-
+  {
+    path: "/family-recipes",
+    name: "familyrecipes",
+    component: FamilyRecipePage,
+  },
+  {
+    path: "/recipe/:recipeId",
+    name: "recipe",
+    component: RecipeViewPage,
+  }
 ];
 
 export default routes;
