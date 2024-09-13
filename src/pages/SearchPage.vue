@@ -134,6 +134,7 @@
         ref="recipePreviewList"
         title="Search Results"
         :amountToFetch="currentAmountToFetch"
+        :recipes="searchResults"
       ></RecipePreviewList>
   <!-- <RecipePreviewList
       ref="recipePreviewList"
@@ -156,8 +157,9 @@ import { required, alpha } from "vuelidate/lib/validators";
 import VueSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
 import RecipePreviewList from "../components/RecipePreviewList";
-import { mockGetRelevantRecipesForSearch } from '../services/recipes';
-import { mockGetRecipesPreview } from "../services/recipes.js";
+// import { mockGetRelevantRecipesForSearch } from '../services/recipes';
+// import { mockGetRecipesPreview } from "../services/recipes.js";
+import axios from 'axios'; 
 
 export default {
   components: {
@@ -186,10 +188,25 @@ export default {
         { value: 'preparationTime', label: 'Preparation Time' },
         { value: 'popularity', label: 'Popularity' }
       ],
+      searchResults: []
     };
   },
   mounted() {
     console.log("hi");
+  // Ensure RecipePreviewList is ready before modifying recipes
+  this.$nextTick(() => {
+    if (this.$refs.recipePreviewList) {
+      console.log("RecipePreviewList is ready:", this.$refs.recipePreviewList);
+
+      // Example of modifying recipes immediately when the page is loaded
+      const newRecipes = []; // Assume you have some initial data
+      console.log("Calling modifyRecipes with initial recipes:", newRecipes);
+      this.$refs.recipePreviewList.modifyRecipes(newRecipes);
+
+    } else {
+      console.error("recipePreviewList is not defined");
+    }
+  });
     EventBus.$on('user-logged-in', (username) => {
       // Handle logic when user logs in
       shared_data.username = username;
@@ -212,6 +229,7 @@ export default {
     this.loadLastSearchQuery();
     // Listen for browser's back/forward navigation events
     window.addEventListener('popstate', this.handlePopState);
+    this.$refs.recipePreviewList.modifyRecipes(newRecipes);
   },
   destroyed() {
     // Cleanup event listener when component is destroyed
@@ -240,12 +258,12 @@ export default {
   // }
   },
   methods: {
-    sortArray() {
-    if (this.selectedFilterType === "popularity" || this.selectedFilterType === "preparationTime") {
-      // Invoke the method in child component
-      this.$refs.recipePreviewList.sortRecipes(this.selectedFilterType);
-    }
-  },
+  //   sortArray() {
+  //   if (this.selectedFilterType === "popularity" || this.selectedFilterType === "preparationTime") {
+  //     // Invoke the method in child component
+  //     this.$refs.recipePreviewList.sortRecipes(this.selectedFilterType);
+  //   }
+  // },
   //   sortArray() {
   //     const response = mockGetRecipesPreview(this.currentAmountToFetch); // Adjust based on actual data fetching
   //     const recipes = response.data.recipes; // Assuming this structure based on mockGetRecipesPreview
@@ -273,7 +291,7 @@ export default {
         this.search();
       }
     },
-    search() {
+    async search() {
       console.log("adi");
       console.log(shared_data.username);
       if (this.searchQuery.trim() === '') {
@@ -298,13 +316,45 @@ export default {
       };
       history.pushState({ searchPageState }, null); // Save state to browser history
       try {
-        const response = mockGetRelevantRecipesForSearch(true);
-
-        if (response.status === 200) {
+        console.log("cuisine:", this.selectedValues1.map(item => item.value).join(','));
+        console.log("diet:", this.selectedValues2.map(item => item.value).join(','));
+        console.log("intolerance:", this.selectedValues3.map(item => item.value).join(','));
+        // const response = mockGetRelevantRecipesForSearch(true);
+        const response = await axios.get("http://localhost:3000/recipes/search",{
+          params:{
+            recipeName: this.searchQuery,
+            number: this.resultsPerPage,
+            cuisine: this.selectedValues1.map(item => item.value).join(','),
+            diet: this.selectedValues2.map(item => item.value).join(','),
+            intolerance: this.selectedValues3.map(item => item.value).join(',')
+          }
+        });
+        const results = response.data;
+        const allRecipes = [];
+        for (const result of results) {
+            const currentId = result.id;
+            console.log("currentId:", currentId);
+            const currentRecipeInfo = await axios.get("http://localhost:3000/recipes/"+currentId);
+            console.log("currentRecipeInfo: ", currentRecipeInfo.data);
+            allRecipes.push(currentRecipeInfo.data);
+        }
+        if (response.status === 200 || response.status === 304) {
           this.noResultsFound = false;
         } else {
           this.noResultsFound = true;
         }
+        console.log('API Response:', response.data);
+        this.searchResults = allRecipes;
+        console.log("this.searchResults ",this.searchResults);
+      //   this.$nextTick(() => {
+      //   if (this.$refs.recipePreviewList) {
+      //     console.log("Calling modifyRecipes with newRecipes:", newRecipes);
+      //     // this.$refs.recipePreviewList.modifyRecipes(newRecipes,this.selectedFilterType);
+      //     this.$refs.recipePreviewList.modifyRecipes(newRecipes);
+      //   } else {
+      //     console.error("recipePreviewList is not defined");
+      //   }
+      // });
       } catch (error) {
         console.error(error);
         if (error.status === 409) {
@@ -316,23 +366,32 @@ export default {
       this.searchPerformed = true;
       this.currentAmountToFetch = this.resultsPerPage;
       try {
-        // Fetch recipes based on amountToFetch
-        console.log("right now this.amountToFetch: ", this.currentAmountToFetch);
-        const response = mockGetRecipesPreview(this.currentAmountToFetch);
-        const recipes = response.data.recipes;
+        //ADI:ALL THESE 3 LINES
+        // // Fetch recipes based on amountToFetch
+        // console.log("right now this.amountToFetch: ", this.currentAmountToFetch);
+        // const response = mockGetRecipesPreview(this.currentAmountToFetch);
+        // const recipes = response.data.recipes;
         
         // Update localRecipes with the fetched recipes
-        const newRecipes = [...recipes];
-        console.log("this.$refs.recipePreviewList.modifyRecipes(newRecipes)");
+        
+      //   console.log("this.$refs.recipePreviewList.modifyRecipes(newRecipes)");
       // this.$refs.recipePreviewList.modifyRecipes(newRecipes);
-        this.$nextTick(() => {
-        if (this.$refs.recipePreviewList) {
-          console.log("Calling modifyRecipes with newRecipes:", newRecipes);
-          this.$refs.recipePreviewList.modifyRecipes(newRecipes,this.selectedFilterType);
-        } else {
-          console.error("recipePreviewList is not defined");
-        }
-      });
+      //   this.$nextTick(() => {
+      //   if (this.$refs.recipePreviewList) {
+      //     console.log("Calling modifyRecipes with newRecipes:", newRecipes);
+      //     this.$refs.recipePreviewList.modifyRecipes(newRecipes,this.selectedFilterType);
+      //   } else {
+      //     console.error("recipePreviewList is not defined");
+      //   }
+      // });
+      // this.$nextTick(() => {
+      //   if (this.$refs.recipePreviewList) {
+      //     console.log("Calling modifyRecipes with newRecipes:", newRecipes);
+      //     this.$refs.recipePreviewList.modifyRecipes(newRecipes,this.selectedFilterType);
+      //   } else {
+      //     console.error("recipePreviewList is not defined");
+      //   }
+      // });
       } catch (error) {
         console.error("Error fetching recipes:", error);
       }
@@ -357,22 +416,23 @@ export default {
     updateSelectedFilterType(value) {
       console.log("didush updateSelectedFilterType");
       this.selectedFilterType = value ? value.value : null;
-      console.log("this.selectedFilterType: ", value);
-      const response = mockGetRecipesPreview(this.currentAmountToFetch);
-        const recipes = response.data.recipes;
+      console.log("this.selectedFilterType: ", this.selectedFilterType);
+      this.$refs.recipePreviewList.sortRecipes(this.selectedFilterType)
+      // const response = mockGetRecipesPreview(this.currentAmountToFetch);
+      //   const recipes = response.data.recipes;
         
         // Update localRecipes with the fetched recipes
-        const newRecipes = [...recipes];
-        console.log("in updateSelectedFilterType");
+        // const newRecipes = [...recipes];
+        // console.log("in updateSelectedFilterType");
       // this.$refs.recipePreviewList.modifyRecipes(newRecipes);
-        this.$nextTick(() => {
-        if (this.$refs.recipePreviewList) {
-          console.log("Calling modifyRecipes with newRecipes:", newRecipes);
-          this.$refs.recipePreviewList.modifyRecipes(newRecipes, this.selectedFilterType);
-        } else {
-          console.error("recipePreviewList is not defined");
-        }
-      });
+      //   this.$nextTick(() => {
+      //   if (this.$refs.recipePreviewList) {
+      //     console.log("Calling modifyRecipes with newRecipes:", newRecipes);
+      //     this.$refs.recipePreviewList.modifyRecipes(newRecipes, this.selectedFilterType);
+      //   } else {
+      //     console.error("recipePreviewList is not defined");
+      //   }
+      // });
     }
     // sortRecipesInChild() {
     //   if (this.selectedFilterType) {

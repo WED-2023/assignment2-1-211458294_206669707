@@ -44,15 +44,27 @@ export default {
     console.log("RecipePreviewList has been mounted");
   },
   created() {
-    this.updateRecipes();
+    // this.updateRecipes();
+    // Initialize localRecipes with the current recipes prop
+    this.localRecipes = [...this.recipes];
   },
   watch: {
+    // recipes: {
+    //   immediate: true,
+    //   handler(newVal) {
+    //     this.localRecipes = [...newVal];
+    //   }
+    // },
     recipes: {
-      immediate: true,
-      handler(newVal) {
-        this.localRecipes = [...newVal];
+    // immediate: true,
+    // handler(newRecipes) {
+    //   this.modifyRecipes(newRecipes);
+    // }
+    immediate: true,
+      handler(newRecipes) {
+        this.localRecipes = [...newRecipes];
       }
-    },
+  },
     amountToFetch(newVal) {
       this.updateRecipes();
     },
@@ -128,24 +140,22 @@ export default {
     });
   },
     sortRecipes(criteria) {
-      let sortedRecipes = [...this.localRecipes];
+      // let sortedRecipes = [...this.localRecipes];
+      // if (criteria === "popularity") {
+      //   sortedRecipes.sort((a, b) => b.popularity - a.popularity);
+      // } else if (criteria === "preparationTime") {
+      //   sortedRecipes.sort((a, b) => a.readyInMinutes - b.readyInMinutes);
+      // }
+      // this.localRecipes = sortedRecipes;
+      // console.log("after sorting: in preview list", this.localRecipes);
+      let sortedRecipes = [...this.localRecipes]; // Copy the recipes prop
+
       if (criteria === "popularity") {
-        sortedRecipes.sort((a, b) => b.aggregateLikes - a.aggregateLikes);
+        sortedRecipes.sort((a, b) => b.popularity - a.popularity); // Sort by popularity
       } else if (criteria === "preparationTime") {
-        sortedRecipes.sort((a, b) => a.readyInMinutes - b.readyInMinutes);
+        sortedRecipes.sort((a, b) => a.readyInMinutes - b.readyInMinutes); // Sort by time
       }
       this.localRecipes = sortedRecipes;
-      console.log("after sorting: in preview list", this.localRecipes);
-
-      // const groupedRecipes = this.groupRecipesById(this.localRecipes);
-
-      // // Sort each group based on criteria
-      // const sortedRecipes = this.sortRecipesInGroups(groupedRecipes, criteria);
-
-      // // Flatten the sorted groups back into a single array
-      // this.localRecipes = sortedRecipes.flat();
-
-      // console.log("Sorted recipes:", this.localRecipes);
     },
     // updateRecipes() {
     //   try {

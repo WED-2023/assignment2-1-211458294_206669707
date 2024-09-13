@@ -16,7 +16,7 @@
         <b-card-text>
           Ready in {{ recipe.readyInMinutes }} minutes
           <br>
-          Popularity: {{ recipe.aggregateLikes }} likes
+          Popularity: {{ recipe.popularity }} likes
           <br>
           Vegan: {{ recipe.vegan ? 'Yes' : 'No' }}
           <br>
