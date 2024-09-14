@@ -16,6 +16,7 @@
 <script>
 import RecipePreview from "./RecipePreview.vue";
 import { mockGetRecipesPreview } from "../services/recipes.js";
+import axios from 'axios'; 
 export default {
   name: "RecipePreviewList",
   components: {
@@ -185,27 +186,44 @@ export default {
     //   }
     //   console.log("after sorting: in preview list", this.recipes);
     // },
-    getRandomRecipes() {
+    async getRandomRecipes(numberOfRecipes) {
       // Fetch recipes data
-      this.recipes = mockGetRecipesPreview(4);
-      console.log("show recipes before random:");
-      console.log(typeof this.recipes);
-
-      // Access the recipes array
-      const recipesArray = this.recipes.data.recipes;
-
-      // Step 1: Shuffle the recipes array (Fisher-Yates shuffle algorithm)
-      const shuffled = recipesArray.slice(); // Create a copy to avoid mutating the original array
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      // this.recipes = mockGetRecipesPreview(4);
+      const response = await axios.get("http://localhost:3000/recipes/random",{
+          params:{
+            number: numberOfRecipes
+          }
+        });
+      const results = response.data;
+      const allRecipes = [];
+      for (const result of results) {
+          const currentId = result.id;
+          console.log("currentId:", currentId);
+          const currentRecipeInfo = await axios.get("http://localhost:3000/recipes/"+currentId);
+          console.log("currentRecipeInfo: ", currentRecipeInfo.data);
+          allRecipes.push(currentRecipeInfo.data);
       }
-
-      // Step 2: Select three random recipes
-      const threeRandomRecipes = shuffled.slice(0, 3);
-
       this.recipes = [];
-      this.recipes.push(...threeRandomRecipes);
+      this.recipes.push(...allRecipes);
+
+      // console.log("show recipes before random:");
+      // console.log(typeof this.recipes);
+
+      // // Access the recipes array
+      // const recipesArray = this.recipes.data.recipes;
+
+      // // Step 1: Shuffle the recipes array (Fisher-Yates shuffle algorithm)
+      // const shuffled = recipesArray.slice(); // Create a copy to avoid mutating the original array
+      // for (let i = shuffled.length - 1; i > 0; i--) {
+      //   const j = Math.floor(Math.random() * (i + 1));
+      //   [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      // }
+
+      // // Step 2: Select three random recipes
+      // const threeRandomRecipes = shuffled.slice(0, 3);
+
+      // this.recipes = [];
+      // this.recipes.push(...threeRandomRecipes);
 }
   }
 };

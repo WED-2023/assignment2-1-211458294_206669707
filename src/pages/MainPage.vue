@@ -5,7 +5,7 @@
       Show Me More Recipes
     </b-button>
     <router-link v-if="!$root.store.username" to="/login" tag="button">Login to View More</router-link>
-    <RecipePreviewList
+    <!-- <RecipePreviewList
       title="Recently Viewed Recipes"
       :amountToFetch="3"
       :class="{
@@ -14,20 +14,40 @@
         center: true
       }"
       disabled
-    ></RecipePreviewList>
+    ></RecipePreviewList> -->
+    <RecipePreviewList
+    title="Recently Viewed Recipes"
+    :recipes="recentRecipes"
+    :amountToFetch="3"
+    :class="{
+      RandomRecipes: true,
+      blur: !$root.store.username,
+      center: true
+    }"
+></RecipePreviewList>
   </div>
 </template>
 
 <script>
 import RecipePreviewList from "../components/RecipePreviewList";
 export default {
+  data() {
+  return {
+    recentRecipes: []
+  };
+},
   components: {
     RecipePreviewList
   },
   methods: {
-    fetchOtherRecipes() {
-      this.$refs.recipePreviewList.getRandomRecipes();
+    async fetchOtherRecipes() {
+      await this.$refs.recipePreviewList.getRandomRecipes(3);
     }
+  },
+  mounted() {
+    // Call fetchOtherRecipes as soon as the component is mounted
+    this.fetchOtherRecipes();
+    this.recentRecipes = JSON.parse(localStorage.getItem('recentRecipes')) || [];
   }
 };
 </script>

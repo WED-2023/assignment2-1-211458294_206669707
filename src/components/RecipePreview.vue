@@ -11,7 +11,6 @@
         style="max-width: 20rem;"
         class="mb-2"
         :class="{ 'clicked-recipe': clicked && isLoggedIn }"
-        @click.prevent="handleClick"
       >
         <b-card-text>
           Ready in {{ recipe.readyInMinutes }} minutes
@@ -79,7 +78,20 @@ export default {
       this.isFavorite = !this.isFavorite;
       // this.isFavorite = true;
       localStorage.setItem(`recipe_${this.recipe.id}_favorite`, this.isFavorite ? 'true' : 'false');
-      const response = mockAddFavorite(recipeDetails);
+      // const response = mockAddFavorite(recipeDetails);
+      // EventBus.$emit('favorites-updated');
+      let favoriteRecipes = JSON.parse(localStorage.getItem('favoriteRecipes')) || [];
+    
+      if (this.isFavorite) {
+        if (!favoriteRecipes.includes(this.recipe.id)) {
+          favoriteRecipes.push(this.recipe.id);
+          console.log("fav: ", this.recipe.id);
+        }
+      } else {
+        favoriteRecipes = favoriteRecipes.filter(id => id !== this.recipe.id);
+      }
+
+    localStorage.setItem('favoriteRecipes', JSON.stringify(favoriteRecipes));
       // TODO: add like to the like count of this recipe
     },
     checkFavorite() {

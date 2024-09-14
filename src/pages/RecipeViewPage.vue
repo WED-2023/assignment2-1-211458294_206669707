@@ -73,6 +73,7 @@
 <script>
 import { mockGetRecipeFullDetails } from "../services/recipes.js";
 import { BButton, BIcon, BCollapse } from 'bootstrap-vue';
+import axios from 'axios'; 
 
 export default {
   components: {
@@ -87,6 +88,27 @@ export default {
     };
   },
   methods: {
+    saveToRecentlyViewed() {
+    const recentRecipes = JSON.parse(localStorage.getItem('recentRecipes')) || [];
+
+    // Check if the current recipe already exists in the list
+    const existingIndex = recentRecipes.findIndex(r => r.id === this.recipe.id);
+    if (existingIndex !== -1) {
+      // If it exists, remove it first
+      recentRecipes.splice(existingIndex, 1);
+    }
+
+    // Add the current recipe to the front of the array
+    recentRecipes.unshift({
+      id: this.recipe.id,
+      title: this.recipe.title,
+      image: this.recipe.image
+    });
+
+    // Keep only the last 3 recipes
+    const maxRecipes = 3;
+    localStorage.setItem('recentRecipes', JSON.stringify(recentRecipes.slice(0, maxRecipes)));
+  },
     toggleDetail(index) {
       // Ensure that the state is toggled correctly
       this.$set(this.ingredientDetails, index, !this.ingredientDetails[index]);
@@ -94,15 +116,37 @@ export default {
   },
   async created() {
     const recipeId = this.$route.params.recipeId;
+    console.log("this.$route.params.recipeId: ",this.$route.params.recipeId);
+    const storedRecipes = JSON.parse(localStorage.getItem('myRecipes')) || [];
+    // Check if a recipe with the same ID already exists
+    const existingRecipe = storedRecipes.find(recipe => recipe && recipe.id === recipeId);
+    if (existingRecipe) {
+      console.log("Recipe with the same ID already exists:", existingRecipe);
+      this.recipe = existingRecipe;
+      console.log("this.recipe: ",this.recipe);
+      this.recipe._instructions = this.recipe.preparationSteps.map(step => step.description);
+      this.ingredientDetails = this.recipe.ingredients.map(ing => ing.name);
+      this.saveToRecentlyViewed();
+      return;
+    }
     try {
-      let response = mockGetRecipeFullDetails(recipeId);
+      // let response = mockGetRecipeFullDetails(recipeId);
+      const response = await axios.get("http://localhost:3000/recipes/information/"+recipeId);
+      console.log("here");
       if (response.status !== 200) {
-        this.$router.replace("/NotFound");
-        return;
+          console.log("fuck");
+          this.$router.replace("/NotFound");
+          return;
       }
-      this.recipe = response.data.recipe;
-      this.recipe._instructions = response.data.recipe.analyzedInstructions.length ? response.data.recipe.analyzedInstructions[0].steps.map(s => s.step) : [response.data.recipe.instructions];
-      this.ingredientDetails = Array(this.recipe.extendedIngredients.length).fill(false);
+      this.recipe = response.data;
+      console.log("this.recipe: ",this.recipe);
+      this.recipe._instructions = this.recipe.analyzedInstructions[0].steps.map(s => s.step);
+      this.ingredientDetails = this.recipe.extendedIngredients;
+      console.log("this.ingredientDetails: ",this.ingredientDetails);
+      this.saveToRecentlyViewed();
+      // this.recipe = response.data.recipe;
+      // this.recipe._instructions = response.data.recipe.analyzedInstructions.length ? response.data.recipe.analyzedInstructions[0].steps.map(s => s.step) : [response.data.recipe.instructions];
+      // this.ingredientDetails = Array(this.recipe.extendedIngredients.length).fill(false);
     } catch (error) {
       console.error("Error loading recipe:", error);
       this.$router.replace("/NotFound");

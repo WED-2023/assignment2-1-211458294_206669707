@@ -206,7 +206,21 @@ export default {
     this.$emit('form-error', errorMessage.join(' '));
     this.formError = 'Please fix the errors in the form: ' + errorMessage.join(' ');
   } else {
-    this.$emit('form-success');
+    // this.$emit('form-success');
+    const randomId = parseInt(Math.random().toString(36).substr(2, 9), 36);
+    this.$emit('form-success', {
+      id: randomId,
+      title: this.name,
+      summary: this.summary,
+      vegetarian: this.vegetarian,
+      vegan: this.vegan,
+      glutenFree: this.glutenFree,
+      image: this.recipeImage,
+      numberOfDishes: this.numberOfDishes,
+      readyInMinutes: this.prepTime,
+      ingredients: this.ingredients,
+      preparationSteps: this.preparationSteps
+    });
     // alert('Form submitted successfully!');
     // Additional success actions here
   }
