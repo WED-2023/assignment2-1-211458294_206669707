@@ -2,6 +2,7 @@
   <div class="container">
     <h1 class="title">Register</h1>
     <b-form @submit.prevent="onRegister" @reset.prevent="onReset">
+      <!-- Username Field -->
       <b-form-group
         id="input-group-username"
         label-cols-sm="3"
@@ -25,8 +26,7 @@
         </b-form-invalid-feedback>
       </b-form-group>
 
-
-      <!-- first name: -->
+      <!-- First Name Field -->
       <b-form-group
         id="input-group-firstName"
         label-cols-sm="3"
@@ -43,13 +43,14 @@
           First Name is required
         </b-form-invalid-feedback>
         <b-form-invalid-feedback v-else-if="!$v.form.firstName.length">
-          First Name length should be greater than 1 characters long
+          First Name length should be greater than 1 character
         </b-form-invalid-feedback>
         <b-form-invalid-feedback v-if="!$v.form.firstName.alpha">
           First Name should contain only letters
         </b-form-invalid-feedback>
       </b-form-group>
-      <!-- last name: -->
+
+      <!-- Last Name Field -->
       <b-form-group
         id="input-group-lastName"
         label-cols-sm="3"
@@ -66,14 +67,14 @@
           Last Name is required
         </b-form-invalid-feedback>
         <b-form-invalid-feedback v-else-if="!$v.form.lastName.length">
-          First Name length should be greater than 1 characters long
+          Last Name length should be greater than 1 character
         </b-form-invalid-feedback>
         <b-form-invalid-feedback v-if="!$v.form.lastName.alpha">
-          First Name should contain only letters
+          Last Name should contain only letters
         </b-form-invalid-feedback>
       </b-form-group>
 
-      <!-- email: -->
+      <!-- Email Field -->
       <b-form-group
         id="input-group-email"
         label-cols-sm="3"
@@ -83,7 +84,7 @@
         <b-form-input
           id="email"
           v-model="$v.form.email.$model"
-          type="text"
+          type="email"
           :state="validateState('email')"
         ></b-form-input>
         <b-form-invalid-feedback v-if="!$v.form.email.required">
@@ -94,7 +95,7 @@
         </b-form-invalid-feedback>
       </b-form-group>
 
-
+      <!-- Country Field -->
       <b-form-group
         id="input-group-country"
         label-cols-sm="3"
@@ -112,8 +113,9 @@
         </b-form-invalid-feedback>
       </b-form-group>
 
+      <!-- Password Field -->
       <b-form-group
-        id="input-group-Password"
+        id="input-group-password"
         label-cols-sm="3"
         label="Password:"
         label-for="password"
@@ -129,7 +131,7 @@
         </b-form-invalid-feedback>
         <b-form-text v-else-if="$v.form.password.$error" text-variant="info">
           Your password should be <strong>strong</strong>. <br />
-          For that, your password should be also:
+          For that, your password should also:
         </b-form-text>
         <b-form-invalid-feedback v-if="!$v.form.password.length">
           Have length between 5-10 characters long
@@ -142,6 +144,7 @@
         </b-form-invalid-feedback>
       </b-form-group>
 
+      <!-- Confirm Password Field -->
       <b-form-group
         id="input-group-confirmedPassword"
         label-cols-sm="3"
@@ -160,23 +163,29 @@
         <b-form-invalid-feedback
           v-else-if="!$v.form.confirmedPassword.sameAsPassword"
         >
-          The confirmed password is not equal to the original password
+          The confirmed password does not match the original password
         </b-form-invalid-feedback>
       </b-form-group>
 
+      <!-- Form Buttons -->
       <b-button type="reset" variant="danger">Reset</b-button>
       <b-button
         type="submit"
         variant="primary"
         style="width:250px;"
         class="ml-5 w-75"
-        >Register</b-button
       >
+        Register
+      </b-button>
+
+      <!-- Login Redirect -->
       <div class="mt-2">
-        You have an account already?
+        Already have an account?
         <router-link to="login"> Log in here</router-link>
       </div>
     </b-form>
+
+    <!-- Error Alert -->
     <b-alert
       class="mt-2"
       v-if="form.submitError"
@@ -186,10 +195,6 @@
     >
       Register failed: {{ form.submitError }}
     </b-alert>
-    <!-- <b-card class="mt-3 md-3" header="Form Data Result">
-      <pre class="m-0"><strong>form:</strong> {{ form }}</pre>
-      <pre class="m-0"><strong>$v.form:</strong> {{ $v.form }}</pre>
-    </b-card> -->
   </div>
 </template>
 
@@ -203,9 +208,10 @@ import {
   sameAs,
   email
 } from "vuelidate/lib/validators";
-import { mockRegister } from "../services/auth.js";
+import { Register } from "../services/auth.js"; // Removed mockRegister as it's no longer needed
+import axios from 'axios'; // Ensure axios is imported if used elsewhere
 
-// Custom validators
+// // Custom validators
 const hasNumber = value => /\d/.test(value);
 const hasSpecialChar = value => /[!@#$%^&*(),.?":{}|<>]/.test(value);
 
@@ -235,17 +241,17 @@ export default {
         length: (u) => minLength(3)(u) && maxLength(8)(u),
         alpha
       },
-      firstName:{
+      firstName: {
         required,
         length: (u) => minLength(2)(u),
         alpha
       },
-      lastName:{
+      lastName: {
         required,
         length: (u) => minLength(2)(u),
         alpha
       },
-      email:{
+      email: {
         required,
         email
       },
@@ -265,9 +271,7 @@ export default {
     }
   },
   mounted() {
-    // console.log("mounted");
     this.countries.push(...countries);
-    // console.log($v);
   },
   methods: {
     validateState(param) {
@@ -276,41 +280,39 @@ export default {
     },
     async Register() {
       try {
-
-        // const response = await this.axios.post(
-        //   // "https://test-for-3-2.herokuapp.com/user/Register",
-        //   this.$root.store.server_domain + "/Register",
-
-        //   {
-        //     username: this.form.username,
-        //     password: this.form.password
-        //   }
-        // );
-
         const userDetails = {
           username: this.form.username,
-          password: this.form.password
+          firstName: this.form.firstName,
+          lastName: this.form.lastName,
+          country: this.form.country,
+          password: this.form.password,
+          email: this.form.email
         };
 
-        const success = true;
-        const response = mockRegister(userDetails, success);
+        const response = await Register(
+          userDetails.username,
+          userDetails.firstName,
+          userDetails.lastName,
+          userDetails.country,
+          userDetails.password,
+          userDetails.email
+        );
 
+        console.log("Registration successful:", response);
+        // Optionally, display a success message here
         this.$router.push("/login");
-        // console.log(response);
       } catch (err) {
-        console.log(err.response);
-        this.form.submitError = err.response.data.message;
+        console.error("Registration failed:", err);
+        this.form.submitError = err.message || "An unexpected error occurred.";
       }
     },
 
-    onRegister() {
-      // console.log("register method called");
+    async onRegister() {
       this.$v.form.$touch();
       if (this.$v.form.$anyError) {
         return;
       }
-      // console.log("register method go");
-      this.Register();
+      await this.Register();
     },
     onReset() {
       this.form = {
@@ -320,7 +322,8 @@ export default {
         country: null,
         password: "",
         confirmedPassword: "",
-        email: ""
+        email: "",
+        submitError: undefined // Reset submitError
       };
       this.$nextTick(() => {
         this.$v.$reset();
@@ -329,6 +332,7 @@ export default {
   }
 };
 </script>
+
 <style lang="scss" scoped>
 .container {
   max-width: 500px;

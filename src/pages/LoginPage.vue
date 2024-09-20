@@ -65,7 +65,8 @@
 
 <script>
 import { required } from "vuelidate/lib/validators";
-import {mockLogin} from "../services/auth.js"
+// import { mockLogin } from "../services/auth.js"
+import { Login } from "../services/auth.js";
 import { EventBus, shared_data } from '@/main.js';
 export default {
   name: "Login",
@@ -93,34 +94,37 @@ export default {
       const { $dirty, $error } = this.$v.form[param];
       return $dirty ? !$error : null;
     },
-async Login() {
-  try {
-    const success = true; // modify this to test the error handling
-    const credentials = {
-      username: this.form.username,
-      password: this.form.password
-    };
-    const response = await mockLogin(credentials, success);
-    this.$root.store.login(this.form.username);
-    shared_data.login(this.form.username); // Update shared data with logged-in username
-    EventBus.$emit('user-logged-in', this.form.username); // Emit event when user logs in
-    this.$router.push("/");
-  } catch (err) {
-    console.log(err.response);
-    this.form.submitError = err.response.data.message;
-  }
-},
+    async Login() {
+      console.log("entered login");
+      try {
+        const success = true; // modify this to test the error handling
+        const credentials = {
+          username: this.form.username,
+          password: this.form.password
+        };
+        // const response = await mockLogin(credentials, success);
+        const response = await Login(credentials.username, credentials.password);
+        console.log("got response");
+        this.$root.store.login(this.form.username);
+        shared_data.login(this.form.username); // Update shared data with logged-in username
+        EventBus.$emit('user-logged-in', this.form.username); // Emit event when user logs in
+        this.$router.push("/");
+      } catch (err) {
+        console.log(err.response);
+        this.form.submitError = err.response.data.message;
+      }
+    },
 
-    onLogin() {
+    async onLogin() {
       // console.log("login method called");
       this.form.submitError = undefined;
       this.$v.form.$touch();
       if (this.$v.form.$anyError) {
         return;
       }
-      // console.log("login method go");
+      console.log("login method go");
 
-      this.Login();
+      await this.Login();
     }
   }
 };

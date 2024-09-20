@@ -5,6 +5,7 @@ import MyRecipes from "./pages/MyRecipesPage"
 import AboutPage from "./pages/AboutPage.vue";
 import FamilyRecipePage from "./pages/FamilyReciepsPage.vue";
 import RecipeViewPage from "./pages/RecipeViewPage.vue";
+import RegisterPage from "./pages/RegisterPage";
 
 const routes = [
   {
@@ -15,7 +16,7 @@ const routes = [
   {
     path: "/register",
     name: "register",
-    component: () => import("./pages/RegisterPage"),
+    component: RegisterPage,
   },
   {
     path: "/login",
